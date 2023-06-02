@@ -1,0 +1,60 @@
+{
+    "package_version": 2,
+    "version": "1.0.0",
+    "name": "uistate-inspector",
+    "description": "i18n:uistate-inspector.description",
+    "main": "./dist/main.js",
+    "devDependencies": {
+        "@types/node": "^16.0.1",
+        "typescript": "^4.3.4"
+    },
+    "author": "cy",
+    "editor": ">=3.7.3",
+    "scripts": {
+        "build": "tsc -b",
+        "watch": "tsc -w"
+    },
+    "contributions": {
+        "inspector":{
+            "section":{
+                "node":{
+                    "UIState":"./dist/contributions/inspector/uistate-inspector.js"
+                }
+            }
+        },
+        "messages": {
+            "record-uuid": {
+                "methods": ["recordUuid"]
+            },
+            "record-director": {
+                "methods": ["recordDirector"]
+            },
+            "asset-db:asset-change":{
+                "methods": ["saveScene"]
+            }
+        },
+        "scene":{
+            "script": "./dist/scene.js"
+        }
+    },
+    "panels": {
+        "default": {
+            "title": "UIState 保存的数据",
+            "type": "dockable",
+            "main": "./dist/panels/default",
+            "size":{
+                "width":450,
+                "height":850
+            }
+        },
+        "list": {
+            "title": "world list",
+            "type": "simple",
+            "main": "./dist/panels/list",
+            "icon": "./static/list.png",
+
+            "flags": {},
+            "size": {}
+        }
+    }
+}
