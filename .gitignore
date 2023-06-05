@@ -22,3 +22,4 @@ node_modules/
 # WebStorm
 #//////////////////////////
 .idea/
+/extensions/uistate-inspector/dist

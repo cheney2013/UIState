@@ -10,7 +10,6 @@ export const methods: { [key: string]: (...any: any) => any } = {
     },
     recordDirector(director: any) {
         storedDirector = director;
-        console.log("main receive", director);
     },
     saveScene(){
         Editor.Message.send("scene", "execute-component-method", {
@@ -18,7 +17,6 @@ export const methods: { [key: string]: (...any: any) => any } = {
             name: "saveCurrentState",
             args: []
         })
-        console.log("saveScene", arguments);
     }
 };
 

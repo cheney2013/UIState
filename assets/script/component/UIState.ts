@@ -418,19 +418,21 @@ export default class UIState extends Component {
                 (comp as any)["_updateColor"]();
                 break;
             case "spriteFrame":
-                if (comp.spriteFrame!.uuid === recordCompAttr[attr]) return;
-                
-                assetManager.loadAny<SpriteFrame>(recordCompAttr[attr], (err, asset) => {
-                    if (err){
-                        console.warn(err);
-                        return;
-                    }
-                    comp.spriteFrame = asset;
-                    
-                    // 特定情况下会出现SpriteFrame没有更新，点击 Creator 能够刷新
-                    // 使用软刷新场景的接口，编辑器会闪一下，体验不是太好，不过可以保证显示正确
-                    REAL_EDITOR && Editor.Message.request("scene", "soft-reload");
-                });
+                if (comp.spriteFrame?.uuid === recordCompAttr[attr]) return;
+
+                if (recordCompAttr[attr])
+                    assetManager.loadAny<SpriteFrame>(recordCompAttr[attr], (err, asset) => {
+                        if (err) {
+                            console.warn(err);
+                            return;
+                        }
+                        comp.spriteFrame = asset;
+
+                        // 特定情况下会出现SpriteFrame没有更新，点击 Creator 能够刷新
+                        // 使用软刷新场景的接口，编辑器会闪一下，体验不是太好，不过可以保证显示正确
+                        REAL_EDITOR && Editor.Message.request("scene", "soft-reload");
+                    });
+                else comp.spriteFrame = null;
                 break;
             default:
                 (comp as any)[attr] = recordCompAttr[attr];
