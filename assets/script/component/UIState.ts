@@ -14,7 +14,7 @@ import {
     Enum,
     Label,
     Node,
-    RichText, Sprite, SpriteFrame, UIRenderer,
+    RichText, Sprite, SpriteFrame,
     Widget,
     _decorator, assetManager
 } from "cc";
@@ -30,15 +30,15 @@ enum States {
  * 会记录的组件及其属性
  */
 const COMP_ATTR_RECORD = <const>{
-    "UITransform": ["width", "height", "anchorX", "anchorY"],
-    "Widget": ["isAlignBottom", "isAlignTop", "isAlignLeft", "isAlignRight", "isAlignVerticalCenter", "isAlignHorizontalCenter", 
+    "cc.UITransform": ["width", "height", "anchorX", "anchorY"],
+    "cc.Widget": ["isAlignBottom", "isAlignTop", "isAlignLeft", "isAlignRight", "isAlignVerticalCenter", "isAlignHorizontalCenter", 
                 "isAbsoluteTop", "isAbsoluteBottom", "isAbsoluteLeft", "isAbsoluteRight", "isAbsoluteHorizontalCenter", "isAbsoluteVerticalCenter",
                 "left", "right", "top", "bottom", "horizontalCenter", "verticalCenter", "alignMode", "alignFlags"],
-    "UIOpacity": ["opacity"],
-    "UIRenderer": ["color"],
-    "Label": ["color", "string", "horizontalAlign", "verticalAlign", "fontSize", "fontFamily", "lineHeight", "overflow", "isBold", "isItalic", "isUnderline", "underlineHeight"],
-    "RichText": ["string", "horizontalAlign", "verticalAlign", "fontSize", "fontFamily", "maxWidth", "lineHeight"],
-    "Sprite": ["color", "spriteFrame", "grayscale", "sizeMode", "type", "trim"]
+    "cc.UIOpacity": ["opacity"],
+    "cc.Label": ["color", "string", "horizontalAlign", "verticalAlign", "fontSize", "fontFamily", "lineHeight", "overflow", "isBold", "isItalic", "isUnderline", "underlineHeight"],
+    "cc.RichText": ["string", "horizontalAlign", "verticalAlign", "fontSize", "fontFamily", "maxWidth", "lineHeight"],
+    "cc.Sprite": ["color", "spriteFrame", "grayscale", "sizeMode", "type", "trim"],
+    "CustomLabel": ["customProp"]
 }
 
 type KEY_OF_COMP_ATTR_RECORD = keyof typeof COMP_ATTR_RECORD;
@@ -124,7 +124,6 @@ export default class UIState extends Component {
         if (REAL_EDITOR) {
             this.walkNode(this.node, child => {
                 this.recordBeforeStateChange(child);
-                // this.removeListener(child);
             });
         }
         
@@ -202,11 +201,6 @@ export default class UIState extends Component {
         CCClass.Attr.setClassAttr(this, "state", "enumList", enumList);
     }
 
-    onDestroy() {
-        if (REAL_EDITOR) this.saveCurrentState();
-        
-    }
-
     /**
      * 保存当前状态
      */
@@ -246,60 +240,50 @@ export default class UIState extends Component {
             }
 
             if (node === this.node) continue;
-            node.active = record.active!;
             node.angle = record.angle;
             node.setScale(record.scaleX, record.scaleY);
 
-            // 在编辑器模式下设置属性会有额外的操作，比如很多组件的属性都会影响 Widget 的属性
-            // 为了避免异常，先从节点树移除
-            let temp:Node;
-            let tempSiblingIndex:number;
-            if (REAL_EDITOR){
-                tempSiblingIndex = node.getSiblingIndex();
-                temp = node.parent;
-                node.parent = null;
-            }
-            Object.keys(COMP_ATTR_RECORD).forEach(compName=>{
-                const comp = node.getComponent(`cc.${compName}`);
-                if (comp){
-                    const recordCompAttr = record[compName as keyof RecordProps];
-                    if (recordCompAttr) {
-                        switch(compName){
-                            case "Label":
-                                Object.keys(recordCompAttr).forEach(attr => {
-                                    this.applyLabelAttr(attr, comp as Label, recordCompAttr);
-                                });
-                                break;
-                            case "Sprite":
-                                Object.keys(recordCompAttr).forEach(attr => {
-                                    this.applySpriteAttr(attr, comp as Sprite, recordCompAttr);
-                                });
-                                break;
-                            case "UIRenderer":
-                                Object.keys(recordCompAttr).forEach(attr => {
-                                    this.applyUIRendererAttr(attr, comp as UIRenderer, recordCompAttr);
-                                });
-                                break;
-                            case "Widget":
-                                Object.assign(comp, recordCompAttr);
-                                break;
-                            default:
-                                Object.assign(comp, recordCompAttr);
-                                break;
-                        }
+            node.components.forEach(comp=>{
+                const compName = (comp as any).__proto__.__classname__ as keyof KEY_OF_COMP_ATTR_RECORD;
+                const recordCompAttr = record[compName as keyof RecordProps];
+
+                if (!recordCompAttr) return;
+
+                const registerComps = this.getNeedRecordComps(comp);
+
+                if (!registerComps.length) return;
+
+                registerComps.forEach(compName=>{
+                    let compAttrs:string[] = COMP_ATTR_RECORD[compName];
+                    switch(compName){
+                        case "cc.Label":
+                            Object.values(compAttrs).forEach(attr => {
+                                this.applyLabelAttr(attr, comp as Label, recordCompAttr);
+                            });
+                            break;
+                        case "cc.Sprite":
+                            Object.values(compAttrs).forEach(attr => {
+                                this.applySpriteAttr(attr, comp as Sprite, recordCompAttr);
+                            });
+                            break;
+                        default:
+                            Object.values(compAttrs).forEach(attr => {
+                                comp[attr] = recordCompAttr[attr];
+                            });
+                            break;
                     }
-                }
+                });
+                if (record[(comp as any).__proto__.__classname__])
+                    comp.enabled = record[(comp as any).__proto__.__classname__].enabled;
             });
-            if (REAL_EDITOR){
-                temp.insertChild(node, tempSiblingIndex);
-            }
+            node.active = record.active!;
 
             // 应用组件启用状态
             node.components.forEach((comp, index) => {
-                const compName = (comp as any).__proto__.constructor.name as keyof RecordProps;
+                const compName = (comp as any).__proto__.__classname__ as keyof RecordProps;
                 const recordCompAttr = record[compName];
                 // 没有记录且没在 COMP_ATTR_RECORD 中表明是在其他状态新增的组件,那么在当前状态就需要禁用
-                if(!recordCompAttr && COMP_ATTR_RECORD[compName as KEY_OF_COMP_ATTR_RECORD]){
+                if(!recordCompAttr && this.isNeedRecordComp(comp)){
                     comp.enabled = false;
                 }
             });
@@ -341,31 +325,38 @@ export default class UIState extends Component {
         
         // 记录组件启用状态
         node.components.forEach(comp => {
-            const compName = (comp as any).__proto__.constructor.name as KEY_OF_COMP_ATTR_RECORD;
-            if (COMP_ATTR_RECORD[compName]){
-                const compAttrs = COMP_ATTR_RECORD[compName].slice();
-                // 记录组件的 enabled 
-                compAttrs.push("enabled" as never);
-                const recordCompAttr:any = {};
-                record![compName] = recordCompAttr;
-                switch(compName){
-                    case "Label":
-                        compAttrs.forEach(attr => {
-                            this.recordLabelAttr(attr, comp as Label, recordCompAttr);
-                        });
-                        break;
-                    case "Sprite":
-                        compAttrs.forEach(attr => {
-                            this.recordSpriteAttr(attr, comp as Sprite, recordCompAttr);
-                        });
-                        break;
-                    default:
-                        compAttrs.forEach(attr => {
-                            recordCompAttr[attr] = comp[attr as keyof typeof comp];
-                        });
-                        break;
+            const registerComps = this.getNeedRecordComps(comp);
+            let recordCompAttr:any;
+            if (!registerComps.length)
+                return;
+
+            recordCompAttr = {
+                enabled: comp.enabled
+            };
+            record[(comp as any).__proto__.__classname__] = recordCompAttr;
+            
+            registerComps.forEach(compName=>{
+                let compAttrs = COMP_ATTR_RECORD[compName];
+                if (compAttrs){
+                    switch(compName){
+                        case "cc.Label":
+                            compAttrs.forEach(attr => {
+                                this.recordLabelAttr(attr, comp as Label, recordCompAttr);
+                            });
+                            break;
+                        case "cc.Sprite":
+                            compAttrs.forEach(attr => {
+                                this.recordSpriteAttr(attr, comp as Sprite, recordCompAttr);
+                            });
+                            break;
+                        default:
+                            compAttrs.forEach(attr => {
+                                recordCompAttr[attr] = comp[attr as keyof typeof comp];
+                            });
+                            break;
+                    }
                 }
-            }
+            });
         });
 
         return record;
@@ -440,18 +431,6 @@ export default class UIState extends Component {
         }
     }
 
-    private applyUIRendererAttr(attr:string, comp:UIRenderer, recordCompAttr:any){
-        switch(attr){
-            case "color":
-                comp.color.fromHEX(recordCompAttr[attr]);
-                (comp as any)["_updateColor"]();
-                break;
-            default:
-                (comp as any)[attr] = recordCompAttr[attr];
-                break;
-        }
-    }
-
     /** 
      * 保存状态
      * 新增的节点不需要处理
@@ -472,7 +451,7 @@ export default class UIState extends Component {
         let record = this._uuidRecordMap?.get(node.uuid);
         // 清理已经删除的组件
         Object.keys(COMP_ATTR_RECORD).some(compName=>{
-            if (node.getComponent(`cc.${compName}`)) return false;
+            if (node.getComponent(compName)) return false;
 
             if (defaultNodeState[compName as keyof RecordProps]){
                 isModify = true;
@@ -499,12 +478,10 @@ export default class UIState extends Component {
         if (!isModify)
             // 检查节点是否有增加或修改
             isModify = node.components.some(component =>{
-                const compName = (component as any).__proto__.constructor.name as keyof RecordProps;
-
                 // 不在 COMP_ATTR_RECORD 里的组件不记录
-                if (!COMP_ATTR_RECORD[compName as KEY_OF_COMP_ATTR_RECORD])
-                    return false;
+                if (!this.isNeedRecordComp(component)) return false;
 
+                const compName = (component as any).__proto__.__classname__ as keyof RecordProps;
                 // 新增的组件
                 if (!defaultNodeState[compName])
                     return true;
@@ -540,6 +517,41 @@ export default class UIState extends Component {
                 });
             }
         }
+    }
+
+    /**
+     * 是否是需要记录的组件，继承自 COMP_ATTR_RECORD 列出的组件也算
+     * @param component 
+     * @returns 
+     */
+    private isNeedRecordComp(component: Component): boolean{
+        let isRegister = false;
+        let compProto = (component as any).__proto__;
+        while(compProto){
+            const compName = compProto.__classname__ as keyof KEY_OF_COMP_ATTR_RECORD;
+            if (COMP_ATTR_RECORD[compName]){
+                isRegister = true;
+                break;
+            }
+            compProto = compProto.__proto__;
+        }
+        return isRegister;
+    }
+
+    /**
+     * 获取需要记录的组件
+     * @param component 
+     * @returns 一个字符串数组，包含需要记录的组件
+     */
+    private getNeedRecordComps(component:Component):string[]{
+        const ret = [];
+        let compProto = (component as any).__proto__;
+        while(compProto){
+            const compName = compProto.__classname__ as keyof KEY_OF_COMP_ATTR_RECORD;
+            if (COMP_ATTR_RECORD[compName]) ret.push(compName);
+            compProto = compProto.__proto__;
+        }
+        return ret;
     }
     
     /**

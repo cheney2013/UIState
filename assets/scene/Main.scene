@@ -180,7 +180,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 592.3774954627949,
+    "_orthoHeight": 813.9650872817955,
     "_near": 0,
     "_far": 1000,
     "_color": {
@@ -292,8 +292,8 @@
       "__type__": "cc.Quat",
       "x": 0,
       "y": 0,
-      "z": -0.09771317388476722,
-      "w": 0.995214617883683
+      "z": 0,
+      "w": 1
     },
     "_lscale": {
       "__type__": "cc.Vec3",
@@ -307,7 +307,7 @@
       "__type__": "cc.Vec3",
       "x": 0,
       "y": 0,
-      "z": -11.215
+      "z": 0
     },
     "_id": "b5DhQMg8ZDBYEyXztSbxBs"
   },
@@ -322,7 +322,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 240,
+      "width": 210,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -342,10 +342,10 @@
     "_enabled": true,
     "__prefab": null,
     "_lineHeight": 40,
-    "_string": "<color=#ff0000>五</color><color=#00ff00>彩</color><color=#0000ff>斑</color><color=#f700f5>斓</color><color=#f6f600>的</color><color=#0fffff>黑</color>",
+    "_string": "我是外层的背景",
     "_horizontalAlign": 0,
     "_verticalAlign": 0,
-    "_fontSize": 40,
+    "_fontSize": 30,
     "_maxWidth": 0,
     "_fontFamily": "Arial",
     "_font": null,
@@ -543,7 +543,7 @@
         "__id__": 14
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 17
@@ -639,7 +639,7 @@
     "node": {
       "__id__": 14
     },
-    "_enabled": true,
+    "_enabled": false,
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
@@ -660,7 +660,7 @@
     "node": {
       "__id__": 14
     },
-    "_enabled": true,
+    "_enabled": false,
     "__prefab": null,
     "_customMaterial": null,
     "_srcBlendFactor": 2,
@@ -776,7 +776,7 @@
       "__id__": 9
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 21
@@ -882,7 +882,7 @@
       "__id__": 9
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 24
@@ -988,7 +988,7 @@
       "__id__": 9
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 27
@@ -1094,7 +1094,7 @@
       "__id__": 9
     },
     "_children": [],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 30
@@ -1264,7 +1264,7 @@
       "levelUp",
       "fullLevel"
     ],
-    "_state": 0,
+    "_state": 1,
     "_records": {
       "0": [
         {
@@ -1277,14 +1277,14 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
             "width": 120,
             "height": 50.4,
             "anchorX": 0.5,
             "anchorY": 0.5,
             "enabled": true
           },
-          "Label": {
+          "cc.Label": {
             "color": "329646",
             "string": "已满级",
             "horizontalAlign": 1,
@@ -1307,14 +1307,14 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
             "width": 300,
             "height": 15,
             "anchorX": 0.5,
             "anchorY": 0.5,
             "enabled": true
           },
-          "Sprite": {
+          "cc.Sprite": {
             "color": "ffffff",
             "spriteFrame": "9fd900dd-221b-4f89-8f2c-fba34243c835@f9941",
             "grayscale": false,
@@ -1334,14 +1334,14 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
             "width": 31.12,
             "height": 50.4,
             "anchorX": 0.5,
             "anchorY": 0.5,
             "enabled": true
           },
-          "Label": {
+          "cc.Label": {
             "color": "000000",
             "string": "1级",
             "horizontalAlign": 1,
@@ -1367,14 +1367,14 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
             "width": 62,
             "height": 34,
             "anchorX": 0.5,
             "anchorY": 0.5,
             "enabled": true
           },
-          "Sprite": {
+          "cc.Sprite": {
             "color": "ffffff",
             "spriteFrame": "88b7887e-b33d-40bb-9eb0-76fd4b99feca@f9941",
             "grayscale": false,
@@ -1394,14 +1394,14 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
             "width": 31.12,
             "height": 50.4,
             "anchorX": 0.5,
             "anchorY": 0.5,
             "enabled": true
           },
-          "Label": {
+          "cc.Label": {
             "color": "000000",
             "string": "2级",
             "horizontalAlign": 1,
@@ -1419,6 +1419,61 @@
           "node": {
             "__id__": 26
           }
+        },
+        {
+          "node": {
+            "__id__": 9
+          },
+          "active": true,
+          "x": 0,
+          "y": -68.485,
+          "angle": 0,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        {
+          "node": {
+            "__id__": 10
+          },
+          "active": true,
+          "x": -214.096,
+          "y": 133.719,
+          "angle": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "cc.UITransform": {
+            "enabled": true,
+            "width": 120,
+            "height": 50.4,
+            "anchorX": 0.5,
+            "anchorY": 0.5
+          },
+          "cc.Label": {
+            "enabled": true,
+            "color": "000000",
+            "string": "我是内层的框",
+            "horizontalAlign": 1,
+            "verticalAlign": 1,
+            "fontSize": 20,
+            "fontFamily": "Arial",
+            "lineHeight": 40,
+            "overflow": 0,
+            "isBold": false,
+            "isItalic": false,
+            "isUnderline": false,
+            "underlineHeight": 2
+          }
+        },
+        {
+          "node": {
+            "__id__": 14
+          },
+          "active": true,
+          "x": -150,
+          "y": 0,
+          "angle": 0,
+          "scaleX": 1,
+          "scaleY": 1
         }
       ],
       "1": [
@@ -1429,14 +1484,15 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
+            "enabled": true,
             "width": 120,
             "height": 50.4,
             "anchorX": 0.5,
-            "anchorY": 0.5,
-            "enabled": true
+            "anchorY": 0.5
           },
-          "Label": {
+          "cc.Label": {
+            "enabled": true,
             "color": "329646",
             "string": "已满级",
             "horizontalAlign": 1,
@@ -1448,8 +1504,7 @@
             "isBold": false,
             "isItalic": false,
             "isUnderline": false,
-            "underlineHeight": 2,
-            "enabled": true
+            "underlineHeight": 2
           },
           "node": {
             "__id__": 29
@@ -1465,21 +1520,21 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
+            "enabled": true,
             "width": 300,
             "height": 15,
             "anchorX": 0.5,
-            "anchorY": 0.5,
-            "enabled": true
+            "anchorY": 0.5
           },
-          "Sprite": {
+          "cc.Sprite": {
+            "enabled": true,
             "color": "ffffff",
             "spriteFrame": "9fd900dd-221b-4f89-8f2c-fba34243c835@f9941",
             "grayscale": false,
             "sizeMode": 0,
             "type": 1,
-            "trim": true,
-            "enabled": true
+            "trim": true
           }
         },
         {
@@ -1492,14 +1547,15 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
+            "enabled": true,
             "width": 31.12,
             "height": 50.4,
             "anchorX": 0.5,
-            "anchorY": 0.5,
-            "enabled": true
+            "anchorY": 0.5
           },
-          "Label": {
+          "cc.Label": {
+            "enabled": true,
             "color": "000000",
             "string": "1级",
             "horizontalAlign": 1,
@@ -1511,8 +1567,7 @@
             "isBold": false,
             "isItalic": false,
             "isUnderline": false,
-            "underlineHeight": 2,
-            "enabled": true
+            "underlineHeight": 2
           }
         },
         {
@@ -1525,21 +1580,21 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
+            "enabled": true,
             "width": 62,
             "height": 34,
             "anchorX": 0.5,
-            "anchorY": 0.5,
-            "enabled": true
+            "anchorY": 0.5
           },
-          "Sprite": {
+          "cc.Sprite": {
+            "enabled": true,
             "color": "ffffff",
             "spriteFrame": "88b7887e-b33d-40bb-9eb0-76fd4b99feca@f9941",
             "grayscale": false,
             "sizeMode": 1,
             "type": 0,
-            "trim": true,
-            "enabled": true
+            "trim": true
           }
         },
         {
@@ -1552,14 +1607,15 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
+            "enabled": true,
             "width": 31.12,
             "height": 50.4,
             "anchorX": 0.5,
-            "anchorY": 0.5,
-            "enabled": true
+            "anchorY": 0.5
           },
-          "Label": {
+          "cc.Label": {
+            "enabled": true,
             "color": "000000",
             "string": "2级",
             "horizontalAlign": 1,
@@ -1571,8 +1627,62 @@
             "isBold": false,
             "isItalic": false,
             "isUnderline": false,
-            "underlineHeight": 2,
-            "enabled": true
+            "underlineHeight": 2
+          }
+        },
+        {
+          "active": true,
+          "x": 0,
+          "y": -68.485,
+          "angle": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "node": {
+            "__id__": 9
+          }
+        },
+        {
+          "active": true,
+          "x": -214.096,
+          "y": 133.719,
+          "angle": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "node": {
+            "__id__": 10
+          },
+          "cc.UITransform": {
+            "enabled": true,
+            "width": 120,
+            "height": 50.4,
+            "anchorX": 0.5,
+            "anchorY": 0.5
+          },
+          "cc.Label": {
+            "enabled": true,
+            "color": "000000",
+            "string": "我是内层的框",
+            "horizontalAlign": 1,
+            "verticalAlign": 1,
+            "fontSize": 20,
+            "fontFamily": "Arial",
+            "lineHeight": 40,
+            "overflow": 0,
+            "isBold": false,
+            "isItalic": false,
+            "isUnderline": false,
+            "underlineHeight": 2
+          }
+        },
+        {
+          "active": true,
+          "x": -150,
+          "y": 0,
+          "angle": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "node": {
+            "__id__": 14
           }
         }
       ]
@@ -1694,7 +1804,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Label",
+    "_name": "cccLabel",
     "_objFlags": 512,
     "_parent": {
       "__id__": 37
@@ -1750,7 +1860,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 160,
+      "width": 171.12,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -1761,7 +1871,7 @@
     "_id": "580tLaJFRPaYhXLsOp/Nxz"
   },
   {
-    "__type__": "cc.Label",
+    "__type__": "8154aeTa6xKYo/6cBryQ/EG",
     "_name": "",
     "_objFlags": 0,
     "node": {
@@ -1779,7 +1889,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "点我切换外层状态",
+    "_string": "点我切换外层状态2",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -1787,7 +1897,7 @@
     "_fontFamily": "Arial",
     "_lineHeight": 40,
     "_overflow": 0,
-    "_enableWrapText": false,
+    "_enableWrapText": true,
     "_font": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
@@ -1796,7 +1906,8 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_id": "2dStRy2CdOfKSDyimgKLmU"
+    "customProp": "test2",
+    "_id": "c33L+0hhFOfZC6VvYXFguE"
   },
   {
     "__type__": "cc.UITransform",
@@ -2288,60 +2399,100 @@
         {
           "active": true,
           "x": 0,
+          "y": 3,
+          "angle": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "cc.UITransform": {
+            "enabled": true,
+            "width": 171.12,
+            "height": 50.4,
+            "anchorX": 0.5,
+            "anchorY": 0.5
+          },
+          "node": {
+            "__id__": 38
+          },
+          "CustomLabel": {
+            "enabled": true,
+            "customProp": "test1",
+            "color": "ffffff",
+            "string": "点我切换外层状态1",
+            "horizontalAlign": 1,
+            "verticalAlign": 1,
+            "fontSize": 20,
+            "fontFamily": "Arial",
+            "lineHeight": 40,
+            "overflow": 0,
+            "isBold": false,
+            "isItalic": false,
+            "isUnderline": false,
+            "underlineHeight": 2
+          }
+        },
+        {
+          "active": true,
+          "x": 0,
           "y": 0,
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
+            "enabled": true,
             "width": 720,
             "height": 1560,
             "anchorX": 0.5,
-            "anchorY": 0.5,
-            "enabled": true
+            "anchorY": 0.5
           },
-          "Sprite": {
+          "cc.Sprite": {
+            "enabled": true,
             "color": "ffffff",
             "spriteFrame": "475bdcef-71c8-422c-9ac0-76197650e12b@f9941",
             "grayscale": false,
             "sizeMode": 1,
             "type": 0,
-            "trim": true,
-            "enabled": true
+            "trim": true
           },
           "node": {
             "__id__": 5
           }
-        },
-        {
-          "active": true,
-          "x": 0,
-          "y": 382.95,
-          "angle": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "UITransform": {
-            "width": 210,
-            "height": 50.4,
-            "anchorX": 0.5,
-            "anchorY": 0.5,
-            "enabled": true
-          },
-          "RichText": {
-            "string": "我是外层的背景",
-            "horizontalAlign": 0,
-            "verticalAlign": 0,
-            "fontSize": 30,
-            "fontFamily": "Arial",
-            "maxWidth": 0,
-            "lineHeight": 40,
-            "enabled": true
-          },
-          "node": {
-            "__id__": 6
-          }
         }
       ],
       "1": [
+        {
+          "active": true,
+          "x": 0,
+          "y": 3,
+          "angle": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "cc.UITransform": {
+            "enabled": true,
+            "width": 171.12,
+            "height": 50.4,
+            "anchorX": 0.5,
+            "anchorY": 0.5
+          },
+          "node": {
+            "__id__": 38
+          },
+          "CustomLabel": {
+            "enabled": true,
+            "customProp": "test2",
+            "color": "ffffff",
+            "string": "点我切换外层状态2",
+            "horizontalAlign": 1,
+            "verticalAlign": 1,
+            "fontSize": 20,
+            "fontFamily": "Arial",
+            "lineHeight": 40,
+            "overflow": 0,
+            "isBold": false,
+            "isItalic": false,
+            "isUnderline": false,
+            "underlineHeight": 2
+          }
+        },
         {
           "node": {
             "__id__": 5
@@ -2352,49 +2503,21 @@
           "angle": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "UITransform": {
+          "cc.UITransform": {
+            "enabled": true,
             "width": 720,
             "height": 1560,
             "anchorX": 0.5,
-            "anchorY": 0.5,
-            "enabled": true
+            "anchorY": 0.5
           },
-          "Sprite": {
+          "cc.Sprite": {
+            "enabled": true,
             "color": "ffffff",
             "spriteFrame": "bde4de98-18d7-47fa-ae16-b5c0651b5ab3@f9941",
             "grayscale": false,
             "sizeMode": 1,
             "type": 0,
-            "trim": true,
-            "enabled": true
-          }
-        },
-        {
-          "node": {
-            "__id__": 6
-          },
-          "active": true,
-          "x": 0,
-          "y": 382.95,
-          "angle": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "UITransform": {
-            "width": 180,
-            "height": 50.4,
-            "anchorX": 0.5,
-            "anchorY": 0.5,
-            "enabled": true
-          },
-          "RichText": {
-            "string": "<color=#ff0000>五</color><color=#00ff00>彩</color><color=#0000ff>斑</color><color=#f700f5>斓</color><color=#f6f600>的</color><color=#0fffff>黑</color>",
-            "horizontalAlign": 0,
-            "verticalAlign": 0,
-            "fontSize": 30,
-            "fontFamily": "Arial",
-            "maxWidth": 0,
-            "lineHeight": 40,
-            "enabled": true
+            "trim": true
           }
         }
       ]
