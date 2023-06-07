@@ -1,9 +1,7 @@
-import { Label, _decorator } from "cc";
-
-const { ccclass, property } = _decorator;
+const { ccclass, property } = cc._decorator;
 
 @ccclass
-export class CustomLabel extends Label{
+export class CustomLabel extends cc.Label{
     @property
     customProp:string = "test";
 }

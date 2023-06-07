@@ -1,1 +1,0 @@
-"use strict";module.exports={description:"UI状态插件，可以方便的管理UI状态"};

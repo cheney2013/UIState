@@ -1,1 +1,0 @@
-"use strict";module.exports={description:"UI state plug-in, you can easily manage UI state"};

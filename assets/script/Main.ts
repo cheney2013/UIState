@@ -1,24 +1,23 @@
-import { Button, Component, Node, NodeEventType, _decorator } from 'cc';
 import UIState from './component/UIState';
-const { ccclass, property } = _decorator;
+const { ccclass, property } = cc._decorator;
 
-@ccclass('Main')
-export class Main extends Component {
-    @property(Button)
-    btnChangeOutter:Button;
+@ccclass
+export class Main extends cc.Component {
+    @property(cc.Button)
+    btnChangeOutter:cc.Button = null;
 
-    @property(Button)
-    btnChangeInner:Button;
+    @property(cc.Button)
+    btnChangeInner:cc.Button = null;
 
-    @property(Node)
-    innerBox:Node;
+    @property(cc.Node)
+    innerBox:cc.Node = null;
 
     start() {
-        this.btnChangeOutter.node.on(NodeEventType.TOUCH_END, () => {
+        this.btnChangeOutter.node.on(cc.Node.EventType.TOUCH_END, () => {
             const uiState = this.node.getComponent(UIState);
             uiState.state = uiState.state === 0 ? 1 : 0;
         });
-        this.btnChangeInner.node.on(NodeEventType.TOUCH_END, () => {
+        this.btnChangeInner.node.on(cc.Node.EventType.TOUCH_END, () => {
             const uiState = this.innerBox.getComponent(UIState);
             uiState.state = uiState.state === 0 ? 1 : 0;
         });

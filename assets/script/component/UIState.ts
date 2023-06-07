@@ -6,20 +6,6 @@ qq:1183875513
 使用过程中遇到问题可以联系我
 */
 
-import {
-    CCClass,
-    CCString,
-    Color,
-    Component,
-    Enum,
-    Label,
-    Node,
-    RichText, Sprite, SpriteFrame,
-    Widget,
-    _decorator, assetManager
-} from "cc";
-import { EDITOR } from "cc/env";
-
 let isInitDebugComp = false;
 
 enum States {
@@ -47,13 +33,14 @@ type STRUCT_OF_COMP_ATTR_RECORD<K extends KEY_OF_COMP_ATTR_RECORD> = typeof COMP
 type RecordProps = {
     [K in KEY_OF_COMP_ATTR_RECORD]?: {[key in STRUCT_OF_COMP_ATTR_RECORD<K>[number]]:any};
 } & {
-    node: Node;
+    node: cc.Node;
     x: number;
     y: number;
     scaleX: number;
     scaleY: number;
     angle: number;
     active: boolean;
+    color: string;
 };
 
 /**
@@ -61,20 +48,19 @@ type RecordProps = {
  * 由于编辑器预览 EDITOR 也为 true，
  * 但又不想让特定代码在编辑器预览执行
  */
-//@ts-ignore
-const REAL_EDITOR = EDITOR && !cc.GAME_VIEW;
+const REAL_EDITOR = CC_EDITOR;
 
-const { ccclass, property, executeInEditMode, disallowMultiple } = _decorator;
-@ccclass("UIState")
+const { ccclass, property, executeInEditMode, disallowMultiple } = cc._decorator;
+@ccclass
 @executeInEditMode
 @disallowMultiple
-export default class UIState extends Component {
+export default class UIState extends cc.Component {
     @property
     private _states: string[] = ["Default"];
 
-    @property({ type: [CCString], step: 1 })
+    @property({ type: [cc.String], step: 1 })
     set states(value: string[]) {
-        if (EDITOR) {
+        if (CC_EDITOR) {
             // 状态数量减少时
             if (value.length < this._states.length){
                 let hasData = false;
@@ -84,8 +70,9 @@ export default class UIState extends Component {
                 }
                 // 二次确认
                 if (hasData){
-                    Editor.Dialog.warn("要删除的状态中含有数据,删除操作不可逆,是否继续?", {
-                        cancel:1,
+                    Editor.Dialog.messageBox({
+                        message:"要删除的状态中含有数据,删除操作不可逆,是否继续?",
+                        type: "warning",
                         buttons: ["是", "否"]
                     }).then(returnValue=>{
                         // 否
@@ -97,9 +84,6 @@ export default class UIState extends Component {
                         }
                         this._states = value;
                         this.updateStateEnumList();
-
-                        // 软刷新场景,编辑器会闪一下,应该有更好的接口可以不闪的刷新吧,不过懒得找了
-                        Editor.Message.request("scene", "soft-reload");
                     });
                     return;
                 }
@@ -122,7 +106,7 @@ export default class UIState extends Component {
         if (this._state === val) return;
         // 编辑器模式时，切换状态前保存当前状态数据
         if (REAL_EDITOR) {
-            this.walkNode(this.node, child => {
+            this.walkNode(this.node, (child:cc.Node) => {
                 this.recordBeforeStateChange(child);
             });
         }
@@ -147,7 +131,7 @@ export default class UIState extends Component {
         if (REAL_EDITOR) this.onFocusInEditor!();
     }
 
-    @property({ type: Enum(States) })
+    @property({ type: cc.Enum(States) })
     get state() {
         return this._state;
     }
@@ -179,7 +163,7 @@ export default class UIState extends Component {
         if (REAL_EDITOR) {
             if (!isInitDebugComp){
                 isInitDebugComp = true;
-                UIStateDecorator(Component);
+                UIStateDecorator(cc.Component);
             }
         }
 
@@ -198,7 +182,10 @@ export default class UIState extends Component {
         this.states.forEach((state, index) => {
             enumList.push({ name: state, value: index });
         });
-        CCClass.Attr.setClassAttr(this, "state", "enumList", enumList);
+        //@ts-ignore
+        cc.Class.Attr.setClassAttr(this, "state", 'type', 'Enum');
+        //@ts-ignore
+        cc.Class.Attr.setClassAttr(this, "state", "enumList", enumList);
     }
 
     /**
@@ -206,7 +193,7 @@ export default class UIState extends Component {
      */
     saveCurrentState() {
         // 编辑器模式时
-        this.walkNode(this.node, child => {
+        this.walkNode(this.node, (child:cc.Node) => {
             this.recordBeforeStateChange(child);
         });
         console.log("已保存当前状态");
@@ -242,8 +229,10 @@ export default class UIState extends Component {
             if (node === this.node) continue;
             node.angle = record.angle;
             node.setScale(record.scaleX, record.scaleY);
+            node.color = cc.Color.fromHEX(new cc.Color, record.color);
 
-            node.components.forEach(comp=>{
+            //@ts-ignore
+            node._components.forEach(comp=>{
                 const compName = (comp as any).__proto__.__classname__ as keyof KEY_OF_COMP_ATTR_RECORD;
                 const recordCompAttr = record[compName as keyof RecordProps];
 
@@ -258,12 +247,12 @@ export default class UIState extends Component {
                     switch(compName){
                         case "cc.Label":
                             Object.values(compAttrs).forEach(attr => {
-                                this.applyLabelAttr(attr, comp as Label, recordCompAttr);
+                                this.applyLabelAttr(attr, comp as cc.Label, recordCompAttr);
                             });
                             break;
                         case "cc.Sprite":
                             Object.values(compAttrs).forEach(attr => {
-                                this.applySpriteAttr(attr, comp as Sprite, recordCompAttr);
+                                this.applySpriteAttr(attr, comp as cc.Sprite, recordCompAttr);
                             });
                             break;
                         default:
@@ -278,8 +267,9 @@ export default class UIState extends Component {
             });
             node.active = record.active!;
 
+            //@ts-ignore
             // 应用组件启用状态
-            node.components.forEach((comp, index) => {
+            node._components.forEach((comp, index) => {
                 const compName = (comp as any).__proto__.__classname__ as keyof RecordProps;
                 const recordCompAttr = record[compName];
                 // 没有记录且没在 COMP_ATTR_RECORD 中表明是在其他状态新增的组件,那么在当前状态就需要禁用
@@ -287,13 +277,13 @@ export default class UIState extends Component {
                     comp.enabled = false;
                 }
             });
-            const widget = node.getComponent(Widget);
+            const widget = node.getComponent(cc.Widget);
             if (!widget || !widget.enabled)
                 node.setPosition(record.x, record.y);
         }
 
         this._defaultNodeState.clear();
-        this.walkNodeWithSubUIState(this.node, child => {
+        this.walkNodeWithSubUIState(this.node, (child:cc.Node) => {
             this._defaultNodeState.set(child.uuid, this.recordNode(child));
         });
     }
@@ -303,28 +293,31 @@ export default class UIState extends Component {
      * @param node
      * @returns
      */
-    private recordNode(node: Node, record?: RecordProps) {
+    private recordNode(node: cc.Node, record?: RecordProps) {
         if (!record)
             record = {
                 node,
                 active: node.active,
-                x: node.position.x,
-                y: node.position.y,
+                x: node.x,
+                y: node.y,
                 angle: node.angle,
-                scaleX: node.scale.x,
-                scaleY: node.scale.y
+                scaleX: node.scaleX,
+                scaleY: node.scaleY,
+                color: node.color.toHEX()
             };
         else{
             record.active = node.active;
-            record.x = node.position.x;
-            record.y = node.position.y;
+            record.x = node.x;
+            record.y = node.y;
             record.angle = node.angle;
-            record.scaleX = node.scale.x;
-            record.scaleY = node.scale.y;
+            record.scaleX = node.scaleX;
+            record.scaleY = node.scaleY;
+            record.color = node.color.toHEX()
         }
         
+        //@ts-ignore
         // 记录组件启用状态
-        node.components.forEach(comp => {
+        node._components.forEach(comp => {
             const registerComps = this.getNeedRecordComps(comp);
             let recordCompAttr:any;
             if (!registerComps.length)
@@ -341,12 +334,12 @@ export default class UIState extends Component {
                     switch(compName){
                         case "cc.Label":
                             compAttrs.forEach(attr => {
-                                this.recordLabelAttr(attr, comp as Label, recordCompAttr);
+                                this.recordLabelAttr(attr, comp as cc.Label, recordCompAttr);
                             });
                             break;
                         case "cc.Sprite":
                             compAttrs.forEach(attr => {
-                                this.recordSpriteAttr(attr, comp as Sprite, recordCompAttr);
+                                this.recordSpriteAttr(attr, comp as cc.Sprite, recordCompAttr);
                             });
                             break;
                         default:
@@ -362,11 +355,11 @@ export default class UIState extends Component {
         return record;
     }
 
-    private recordLabelAttr(attr:string, comp:Label, recordCompAttr:any){
+    private recordLabelAttr(attr:string, comp:cc.Label, recordCompAttr:any){
         switch(attr){
-            case "color":
-                recordCompAttr[attr] = comp.color.toHEX();
-                break;
+            // case "color":
+            //     recordCompAttr[attr] = comp.color.toHEX();
+            //     break;
             case "string":
                 // 有多语言组件时不处理
                 if (comp.getComponent("L10nLabel")) break;
@@ -376,25 +369,26 @@ export default class UIState extends Component {
         }
     }
 
-    private applyLabelAttr(attr:string, comp:Label, recordCompAttr:any){
+    private applyLabelAttr(attr:string, comp:cc.Label, recordCompAttr:any){
         switch(attr){
-            case "color":
-                comp.color.fromHEX(recordCompAttr[attr]);
-                (comp as any)["_updateColor"]();
-                break;
+            // case "color":
+            //     comp.color.fromHEX(recordCompAttr[attr]);
+            //     (comp as any)["_updateColor"]();
+            //     break;
             default:
                 (comp as any)[attr] = recordCompAttr[attr];
                 break;
         }
     }
 
-    private recordSpriteAttr(attr:string, comp:Sprite, recordCompAttr:any){
+    private recordSpriteAttr(attr:string, comp:cc.Sprite, recordCompAttr:any){
         switch(attr){
-            case "color":
-                recordCompAttr[attr] = comp.color.toHEX();
-                break;
+            // case "color":
+            //     recordCompAttr[attr] = comp.color.toHEX();
+            //     break;
             case "spriteFrame":
-                recordCompAttr[attr] = comp.spriteFrame?.uuid;
+                //@ts-ignore
+                recordCompAttr[attr] = comp.spriteFrame?._uuid;
                 break;
             default:
                 recordCompAttr[attr] = comp[attr as keyof typeof comp];
@@ -402,17 +396,18 @@ export default class UIState extends Component {
         }
     }
 
-    private applySpriteAttr(attr:string, comp:Sprite, recordCompAttr:any){
+    private applySpriteAttr(attr:string, comp:cc.Sprite, recordCompAttr:any){
         switch(attr){
-            case "color":
-                comp.color.fromHEX(recordCompAttr[attr]);
-                (comp as any)["_updateColor"]();
-                break;
+            // case "color":
+            //     comp.color.fromHEX(recordCompAttr[attr]);
+            //     (comp as any)["_updateColor"]();
+            //     break;
             case "spriteFrame":
-                if (comp.spriteFrame?.uuid === recordCompAttr[attr]) return;
+                //@ts-ignore
+                if (comp.spriteFrame?._uuid === recordCompAttr[attr]) return;
 
                 if (recordCompAttr[attr])
-                    assetManager.loadAny<SpriteFrame>(recordCompAttr[attr], (err, asset) => {
+                    cc.assetManager.loadAny(recordCompAttr[attr], (err, asset) => {
                         if (err) {
                             console.warn(err);
                             return;
@@ -421,7 +416,7 @@ export default class UIState extends Component {
 
                         // 特定情况下会出现SpriteFrame没有更新，点击 Creator 能够刷新
                         // 使用软刷新场景的接口，编辑器会闪一下，体验不是太好，不过可以保证显示正确
-                        REAL_EDITOR && Editor.Message.request("scene", "soft-reload");
+                        // REAL_EDITOR && Editor.Message.request("scene", "soft-reload");
                     });
                 else comp.spriteFrame = null;
                 break;
@@ -438,7 +433,7 @@ export default class UIState extends Component {
      *      有记录：更新状态当前记录
      *      无记录：保存当前状态，并在其他状态上保存默认的状态
      */
-    private recordBeforeStateChange(node: Node) {
+    private recordBeforeStateChange(node: cc.Node) {
         const defaultNodeState = this._defaultNodeState.get(node.uuid)!;
 
         // 新增的节点记录到 _defaultNodeState
@@ -469,15 +464,17 @@ export default class UIState extends Component {
         });
 
         if (!isModify){
-            if (defaultNodeState.active !== node.active || defaultNodeState.x!== node.position.x || 
-                defaultNodeState.y!== node.position.y|| defaultNodeState.angle !== node.angle ||
-                defaultNodeState.scaleX!== node.scale.x || defaultNodeState.scaleY!== node.scale.y)
+            if (defaultNodeState.active !== node.active || defaultNodeState.x!== node.x || 
+                defaultNodeState.y!== node.y|| defaultNodeState.angle !== node.angle ||
+                defaultNodeState.scaleX!== node.scaleX || defaultNodeState.scaleY!== node.scaleY ||
+                defaultNodeState.color !== node.color.toHEX())
                     isModify = true;
         }
 
         if (!isModify)
+            //@ts-ignore
             // 检查节点是否有增加或修改
-            isModify = node.components.some(component =>{
+            isModify = node._components.some(component =>{
                 // 不在 COMP_ATTR_RECORD 里的组件不记录
                 if (!this.isNeedRecordComp(component)) return false;
 
@@ -489,10 +486,11 @@ export default class UIState extends Component {
                 const compAttrRecord = defaultNodeState[compName]!;
                 return Object.keys(compAttrRecord).some(key => {
                     switch(key){
-                        case "color":
-                            return (compAttrRecord as any)[key] !== ((component as any)[key] as Color).toHEX();
+                        // case "color":
+                        //     return (compAttrRecord as any)[key] !== ((component as any)[key] as cc.Color).toHEX();
                         case "spriteFrame":
-                            return (compAttrRecord as any)[key] !== ((component as any)[key] as SpriteFrame).uuid;
+                            //@ts-ignore
+                            return (compAttrRecord as any)[key] !== ((component as any)[key] as cc.SpriteFrame)._uuid;
                         default:
                             if ((compAttrRecord as any)[key] !== (component as any)[key])
                                 return true;
@@ -524,7 +522,7 @@ export default class UIState extends Component {
      * @param component 
      * @returns 
      */
-    private isNeedRecordComp(component: Component): boolean{
+    private isNeedRecordComp(component: cc.Component): boolean{
         let isRegister = false;
         let compProto = (component as any).__proto__;
         while(compProto){
@@ -543,7 +541,7 @@ export default class UIState extends Component {
      * @param component 
      * @returns 一个字符串数组，包含需要记录的组件
      */
-    private getNeedRecordComps(component:Component):string[]{
+    private getNeedRecordComps(component:cc.Component):string[]{
         const ret = [];
         let compProto = (component as any).__proto__;
         while(compProto){
@@ -559,18 +557,18 @@ export default class UIState extends Component {
      * @param node 
      * @param func 
      */
-    private walkNodeWithSubUIState(node: Node, func: (target: Node) => void) {
+    private walkNodeWithSubUIState(node: cc.Node, func: (target: cc._BaseNode) => void) {
         let skipUuid = "";
         node.walk(
             child => {
                 if (skipUuid) return;
                 // if (child === node) return;
-                if (child.getComponent(RichText)) {
+                if (child.getComponent(cc.RichText)) {
                     skipUuid = child.uuid;
                 }
                 func(child);
             },
-            (child: Node) => {
+            (child: cc.Node) => {
                 if (skipUuid && skipUuid === child.uuid) {
                     skipUuid = "";
                 }
@@ -578,18 +576,18 @@ export default class UIState extends Component {
         );
     }
 
-    private walkNode(node: Node, func: (target: Node) => void) {
+    private walkNode(node: cc.Node, func: (target: cc._BaseNode) => void) {
         let skipUuid = "";
         node.walk(
             child => {
                 if (skipUuid) return;
                 // if (child === node) return;
-                if (child.getComponent(RichText) || (child !== node && child.getComponent(UIState))) {
+                if (child.getComponent(cc.RichText) || (child !== node && child.getComponent(UIState))) {
                     skipUuid = child.uuid;
                 }
                 func(child);
             },
-            (child: Node) => {
+            (child: cc.Node) => {
                 if (skipUuid && skipUuid === child.uuid) {
                     skipUuid = "";
                 }
@@ -627,7 +625,7 @@ const UIStateDecorator = function (ctr: Function) {
         div.style.zIndex = "99999";
         div.style.borderRadius = "calc(var(--size-normal-radius) * 2px)";
         div.style.boxShadow = "inset 0 0 0 calc(var(--size-normal-border) * 1px) var(--color-default-border-normal)";
-        document.getElementById("GameDiv")!.append(div);
+        document.getElementById("scene").shadowRoot.append(div);
         return div;
     };
 
@@ -648,7 +646,7 @@ const UIStateDecorator = function (ctr: Function) {
 
             if (!node) return;
 
-            Editor.Message.send("uistate-inspector", "record-uuid", uiState!.uuid);
+            // Editor.Message.send("uistate-inspector", "record-uuid", uiState!.uuid);
 
             targetElement.innerHTML = `<span style="font-size:12px;color:#888">UIState</span> <br/> ${node.name}  <br/> state: ${
                 uiState!.states[uiState!.state]
