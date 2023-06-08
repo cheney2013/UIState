@@ -10,20 +10,11 @@
 
 # 安装和使用
 
-1. 将 extensions 目录下的 uistate-inspector 拷贝到你项目的 extensions 目录下
-
-![image](https://github.com/cheney2013/ImageRepo/blob/main/Snipaste_2023-06-02_12-08-08.png)
-
-2. 点击 Creator 工具栏的 扩展->扩展管理器，点击已安装扩展，点击刷新扩展，就可以看到 uistate-inspector 扩展
-
-![image](https://github.com/cheney2013/ImageRepo/blob/main/Snipaste_2023-06-02_12-09-33.png)
-
-3. 点击扩展右边的 toggle button，启用扩展
-4. 将 assets\script\component 目录下的 UIState.ts 文件复制到你项目的任意位置
+1. 将 assets\script\component 目录下的 UIState.ts 文件复制到你项目的任意位置
 
 ![image](https://github.com/cheney2013/ImageRepo/blob/main/Snipaste_2023-06-02_12-10-06.png)
 
-5. 为你需要记录UI状态的节点添加 UIState 组件
+2. 为你需要记录UI状态的节点添加 UIState 组件
 
 ## 测试场景
 
