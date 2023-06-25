@@ -22,6 +22,7 @@ const COMP_ATTR_RECORD = <const>{
                 "left", "right", "top", "bottom", "horizontalCenter", "verticalCenter", "alignMode", "alignFlags"],
     "cc.UIOpacity": ["opacity"],
     "cc.Label": ["color", "string", "horizontalAlign", "verticalAlign", "fontSize", "fontFamily", "lineHeight", "overflow", "isBold", "isItalic", "isUnderline", "underlineHeight"],
+    "cc.LabelOutline": [],
     "cc.RichText": ["string", "horizontalAlign", "verticalAlign", "fontSize", "fontFamily", "maxWidth", "lineHeight"],
     "cc.Sprite": ["color", "spriteFrame", "grayscale", "sizeMode", "type", "trim"],
     "CustomLabel": ["customProp"]
@@ -103,7 +104,6 @@ export default class UIState extends cc.Component {
     private _state: States = States.Default;
 
     set state(val: number) {
-        if (this._state === val) return;
         // 编辑器模式时，切换状态前保存当前状态数据
         if (REAL_EDITOR) {
             this.walkNode(this.node, (child:cc.Node) => {
@@ -413,12 +413,7 @@ export default class UIState extends cc.Component {
                             return;
                         }
                         comp.spriteFrame = asset;
-
-                        // 特定情况下会出现SpriteFrame没有更新，点击 Creator 能够刷新
-                        // 使用软刷新场景的接口，编辑器会闪一下，体验不是太好，不过可以保证显示正确
-                        // REAL_EDITOR && Editor.Message.request("scene", "soft-reload");
                     });
-                else comp.spriteFrame = null;
                 break;
             default:
                 (comp as any)[attr] = recordCompAttr[attr];
